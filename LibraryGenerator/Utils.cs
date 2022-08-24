@@ -17,15 +17,15 @@ internal class Utils
         {
             if (lines[i].StartsWith("#include \"third-party"))
             {
-                Console.WriteLine($"Fixing {fileInfo.Name}...");
+                Console.WriteLine($"Fixing line {i} in {fileInfo.Name}...");
                 lines[i] = $"// {lines[i]}  // Fixed by LibraryGenerator";
             }
         }
         File.WriteAllLines(fileInfo.FullName, lines);
         fixedFiles.Add(fileInfo.FullName);
-        for (int i = 0; i < lines.Length; i++)
+        foreach (string line in lines)
         {
-            MatchCollection matches = Regex.Matches(lines[i], "^#include \"(.+?)\"");
+            MatchCollection matches = Regex.Matches(line, "^#include \"(.+?)\"");
             foreach (Match match in matches)
             {
                 string path = Path.Combine(fileInfo.DirectoryName, match.Groups[1].Value);
