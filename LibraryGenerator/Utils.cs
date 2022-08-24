@@ -20,7 +20,7 @@ internal class Utils
         {
             if (lines[i].StartsWith("#include \"third-party"))
             {
-                Console.WriteLine($"Fixing line {i} in {fileInfo.Name}...");
+                Console.WriteLine($"Fixing line {i + 1} in {fileInfo.Name}...");
                 lines[i] = $"// {lines[i]}  // Fixed by LibraryGenerator";
             }
         }
