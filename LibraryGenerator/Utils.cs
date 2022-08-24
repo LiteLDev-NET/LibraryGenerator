@@ -5,14 +5,17 @@ using System.Text.RegularExpressions;
 
 internal class Utils
 {
+    // 已修复列表
     private static readonly List<string> fixedFiles = new();
     internal static void FixInclude(FileInfo fileInfo)
     {
+        // 跳过已修复
         if (fixedFiles.Contains(fileInfo.FullName))
         {
             return;
         }
         string[] lines = File.ReadAllLines(fileInfo.FullName);
+        // 注释引用
         for (int i = 0; i < lines.Length; i++)
         {
             if (lines[i].StartsWith("#include \"third-party"))
@@ -21,6 +24,7 @@ internal class Utils
                 lines[i] = $"// {lines[i]}  // Fixed by LibraryGenerator";
             }
         }
+        // 回写
         File.WriteAllLines(fileInfo.FullName, lines);
         fixedFiles.Add(fileInfo.FullName);
         foreach (string line in lines)

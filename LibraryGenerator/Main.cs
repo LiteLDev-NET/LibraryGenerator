@@ -1,10 +1,4 @@
-﻿/*
- * 
- * 将LLSDK放至SDK文件夹即可
- * 文件将生成于output文件夹
- * 
- */
-using System.IO;
+﻿using System.IO;
 
 new GeneratingUnit()
 {
