@@ -13,10 +13,7 @@ internal class GeneratingUnit : ILibrary
     internal string InputPath { get; set; }
     // 文件名
     private string CurrectFile { get; set; }
-    internal GeneratingUnit()
-    {
-    }
-
+    #region Unused
     public void Postprocess(Driver driver, ASTContext ctx)
     {
     }
@@ -25,6 +22,10 @@ internal class GeneratingUnit : ILibrary
     {
     }
 
+    public void SetupPasses(Driver driver)
+    {
+    }
+    #endregion
     public void Setup(Driver driver)
     {
         // C++版本
@@ -53,15 +54,12 @@ internal class GeneratingUnit : ILibrary
 
         // 静态库
         module.LibraryDirs.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "Lib"));
-        module.Libraries.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "Lib", "bedrock_server_api.lib"));
-        module.Libraries.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "Lib", "bedrock_server_var.lib"));
-        module.Libraries.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "Lib", "LiteLoader.lib"));
-        module.Libraries.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "Lib", "SymDBHelper.lib"));
+        module.Libraries.Add("bedrock_server_api");
+        module.Libraries.Add("bedrock_server_var");
+        module.Libraries.Add("LiteLoader");
+        module.Libraries.Add("SymDBHelper");
     }
 
-    public void SetupPasses(Driver driver)
-    {
-    }
     internal void Run()
     {
         foreach (FileInfo file in new DirectoryInfo(InputPath).GetFiles())
