@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LibraryGenerator": {
+      "commandName": "Project",
+      "workingDirectory": "../../../../"
+    }
+  }
+}
