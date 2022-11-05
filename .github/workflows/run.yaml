@@ -21,7 +21,7 @@ jobs:
       shell: bash
       run: |
         mkdir -p SDK/Tools/Server
-        curl -L -o SDK/Tools/Server/server.zip https://minecraft.azureedge.net/bin-win/bedrock-server-1.19.21.01.zip
+        curl -L -o SDK/Tools/Server/server.zip https://minecraft.azureedge.net/bin-win/bedrock-server-1.19.41.01.zip
         unzip SDK/Tools/Server/server.zip -d SDK/Tools/Server/ > /dev/null
 
     - name: Build Library
