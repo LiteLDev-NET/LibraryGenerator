@@ -1,106 +1,118 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
-namespace LibGenerator
+namespace LibraryGenerator;
+
+public class PreGenerateHeaderHelper
 {
-    public class PreGenerateHeaderHelper
+    public PreGenerateHeaderHelper(string headerPath)
     {
-        public PreGenerateHeaderHelper(string headerPath)
+        HeaderPath = headerPath;
+    }
+
+    private string HeaderPath { get; set; }
+
+    private readonly string PreGenerateHeaderPath = Path.Combine(Global.CachePath, "PreGenerateHeader");
+    public void Run()
+    {
+        if (Directory.Exists(PreGenerateHeaderPath))
         {
-            HeaderPath = headerPath;
+            Directory.Delete(PreGenerateHeaderPath, true);
         }
 
-        string HeaderPath { get; set; }
+        _ = Directory.CreateDirectory(PreGenerateHeaderPath);
 
-        const string PreGenerateHeaderPath = $@"{Global.CachePath}\PreGenerateHeader";
-        public void Run()
+        FileStream inputHeader = File.Open(HeaderPath, FileMode.Open);
+        string path = Path.Combine(PreGenerateHeaderPath, Path.GetFileName(HeaderPath));
+        FileStream outputHeader = File.Create(path);
+
+        if (inputHeader is null || outputHeader is null)
         {
-            if (Directory.Exists(PreGenerateHeaderPath))
-                Directory.Delete(PreGenerateHeaderPath, true);
-            Directory.CreateDirectory(PreGenerateHeaderPath);
+            return;
+        }
 
-            var inputHeader = File.Open(HeaderPath, FileMode.Open);
-            var outputHeader = File.Create($@"{PreGenerateHeaderPath}\{Path.GetFileName(HeaderPath)}");
+        StreamReader reader = new(inputHeader);
+        StreamWriter writer = new(outputHeader);
 
-            if (inputHeader == null || outputHeader == null)
-                return;
+        while (!reader.EndOfStream)
+        {
+            string line = reader.ReadLine();
 
-            StreamReader reader = new(inputHeader);
-            StreamWriter writer = new(outputHeader);
-
-            while (!reader.EndOfStream)
+            if (line is null)
             {
-                var line = reader.ReadLine();
-
-                if (line == null)
-                    continue;
-
-                if (line.Contains("gsl::"))
-                {
-                    var rx = new Regex("class gsl::(.*?)<(.*?)(>+)");
-                    var matches = rx.Matches(line);
-                    foreach (Match match in matches)
-                    {
-                        line = match.Groups[1].Value switch
-                        {
-                            "not_null" => Handle_not_null(line, match),
-                            "span" => Handle_span(line, match),
-                            _ => line
-                        };
-
-
-                    }
-                }
-
-                writer.WriteLine(line);
+                continue;
             }
 
-            reader.Close();
-            writer.Close();
+            if (line.Contains("gsl::"))
+            {
+                Regex rx = new("class gsl::(.*?)<(.*?)(>+)");
+                MatchCollection matches = rx.Matches(line);
+                foreach (Match match in matches.Cast<Match>())
+                {
+                    line = match.Groups[1].Value switch
+                    {
+                        "not_null" => Handle_not_null(line, match),
+                        "span" => Handle_span(line, match),
+                        _ => line
+                    };
 
-            File.Copy($@"{PreGenerateHeaderPath}\{Path.GetFileName(HeaderPath)}", HeaderPath, true);
+
+                }
+            }
+
+            writer.WriteLine(line);
         }
 
-        static string Handle_not_null(string line, Match match)
-        {
-            var groups = match.Groups;
+        reader.Close();
+        writer.Close();
 
-            var ret = line.Substring(0, groups[0].Index);
-            ret += groups[2].Value;
+        File.Copy(path, HeaderPath, true);
+    }
+
+    private static string Handle_not_null(string line, Match match)
+    {
+        GroupCollection groups = match.Groups;
+
+        string ret = line[..groups[0].Index];
+        ret += groups[2].Value;
+
+        if (groups[3].Length > 1)
+        {
+            for (int i = 0; i < groups[3].Length - 1; i++)
+            {
+                ret += '>';
+            }
+        }
+
+        ret += line[(groups[0].Index + groups[0].Length)..];
+
+        return ret;
+    }
+
+    private static string Handle_span(string line, Match match)
+    {
+        GroupCollection groups = match.Groups;
+
+        if (groups[0].Value.Contains("std::string"))
+        {
+            string ret = line[..groups[0].Index];
+
+            ret += "std::string";
 
             if (groups[3].Length > 1)
+            {
                 for (int i = 0; i < groups[3].Length - 1; i++)
+                {
                     ret += '>';
+                }
+            }
 
-            ret += line.Substring(groups[0].Index + groups[0].Length);
+            ret += line[(groups[0].Index + groups[0].Length)..];
 
             return ret;
         }
 
-        static string Handle_span(string line, Match match)
-        {
-            var groups = match.Groups;
-
-            if (groups[0].Value.Contains("std::string"))
-            {
-                var ret = line.Substring(0, groups[0].Index);
-
-                ret += "std::string";
-
-                if (groups[3].Length > 1)
-                    for (int i = 0; i < groups[3].Length - 1; i++)
-                        ret += '>';
-
-                ret += line.Substring(groups[0].Index + groups[0].Length);
-
-                return ret;
-            }
-
-            return line;
-        }
+        return line;
     }
 }

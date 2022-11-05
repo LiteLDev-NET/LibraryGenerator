@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace LibraryGenerator;
 
-namespace LibGenerator
+public class Global
 {
-    public class Global
-    {
-        public const string CachePath = "cache";
-    }
+    public const string CachePath = "cache";
 }
