@@ -108,6 +108,6 @@ public class GeneratingUnit : ILibrary
         string outputFileName = Path.GetFileNameWithoutExtension(SourceFile);
 
         File.Copy(Path.Combine(CppSharpOutputPath, outputFileName + ".cpp"), Path.Combine(OutputDir, outputFileName + ".cpp"), true);
-        File.Copy(Path.Combine(CppSharpOutputPath, outputFileName + ".h"), Path.Combine(OutputDir, outputFileName + ".h"), true);
+        File.Copy(Path.Combine(CppSharpOutputPath, outputFileName + ".h"), Path.Combine(OutputDir, outputFileName + ".hpp"), true);
     }
 }

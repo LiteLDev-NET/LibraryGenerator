@@ -8,7 +8,7 @@ public class Program
 {
     public static void Main()
     {
-        string sdkPath = Path.Combine(Global.CachePath, "SDK");
+        string sdkPath = Path.Combine("SDK");
 
         if (!Directory.Exists(sdkPath))
         {
@@ -27,7 +27,7 @@ public class Program
         }
         #region Fix
         {
-            string Global_h = Path.Combine(sdkPath, "Header", "Global.h");
+            string Global_h = Path.Combine(sdkPath, "include", "llapi", "Global.h");
             string[] lines = File.ReadAllLines(Global_h);
             for (int i = 0; i < lines.Length; i++)
             {
@@ -39,13 +39,13 @@ public class Program
             File.WriteAllLines(Global_h, lines);
         }
         #endregion
-        PreGenerateHeaderHelper helper = new(Path.Combine(sdkPath, "Header", "MC", "Actor.hpp"));
+        PreGenerateHeaderHelper helper = new(Path.Combine(sdkPath, "include", "llapi", "mc", "Actor.hpp"));
 
         helper.Run();
 
         List<string> IncludeDirs = new()
         {
-                Path.GetFullPath(Path.Combine(sdkPath, "Header","MC"))
+            Path.GetFullPath(Path.Combine(sdkPath, "include"))
         };
         #region FixDir
         {
@@ -58,8 +58,8 @@ public class Program
         #endregion
 
         GeneratingUnit unit = new(
-            Path.GetFullPath(Path.Combine(sdkPath, "Header", "MC", "AABB.hpp")),
-            Path.GetFullPath(Path.Combine(sdkPath, "Lib")),
+            Path.GetFullPath(Path.Combine(sdkPath, "include", "llapi", "mc", "AABB.hpp")),
+            Path.GetFullPath(Path.Combine(sdkPath, "lib")),
             @$"output",
             "MC",
             "MODULE")
