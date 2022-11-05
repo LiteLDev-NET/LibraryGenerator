@@ -29,13 +29,20 @@ internal class GeneratingUnit : ILibrary
     public void Setup(Driver driver)
     {
         // C++版本
-        driver.ParserOptions.LanguageVersion = LanguageVersion.CPP17_GNU;
+        driver.ParserOptions.LanguageVersion = LanguageVersion.CPP17;
         // 详细输出
         driver.Options.Verbose = true;
         driver.ParserOptions.Verbose = true;
-        // 修复winnt.h报错
+        // 预处理定义
+        driver.ParserOptions.AddDefines("NDEBUG");
+        driver.ParserOptions.AddDefines("LITELOADER_EXPORTS");
+        driver.ParserOptions.AddDefines("WIN32_LEAN_AND_MEAN");
+        driver.ParserOptions.AddDefines("_CRT_SECURE_NO_WARNINGS");
+        driver.ParserOptions.AddDefines("_WINDOWS");
+        driver.ParserOptions.AddDefines("_USRDLL");
         driver.ParserOptions.AddDefines("_AMD64_");
-
+        driver.ParserOptions.AddDefines("NOMINMAX");
+        driver.ParserOptions.AddDefines("%(PreprocessorDefinitions)");
         // 转换类型
         driver.Options.GeneratorKind = GeneratorKind.CLI;
         // 输出目录
