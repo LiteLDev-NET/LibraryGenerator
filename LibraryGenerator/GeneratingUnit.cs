@@ -50,10 +50,10 @@ internal class GeneratingUnit : ILibrary
         module.Headers.Add(CurrectFile);
 
         // 引用目录
-        module.IncludeDirs.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "Header"));
+        module.IncludeDirs.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include"));
 
         // 静态库
-        module.LibraryDirs.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "Lib"));
+        module.LibraryDirs.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "lib"));
         module.Libraries.Add("bedrock_server_api");
         module.Libraries.Add("bedrock_server_var");
         module.Libraries.Add("LiteLoader");
@@ -65,8 +65,6 @@ internal class GeneratingUnit : ILibrary
         foreach (FileInfo file in new DirectoryInfo(InputPath).GetFiles())
         {
             Console.WriteLine($"Doing {file.Name} to {Module}...");
-            // 移除第三方引用
-            Utils.FixInclude(file);
             if (file.Extension is ".h" or ".hpp")
             {
                 CurrectFile = file.FullName;
