@@ -2,6 +2,7 @@
 using CppSharp.AST;
 using CppSharp.Generators;
 using CppSharp.Parser;
+using LibraryGenerator;
 using System;
 using System.IO;
 
@@ -12,7 +13,7 @@ internal class GeneratingUnit : ILibrary
     // 文件目录
     internal string InputPath { get; set; }
     // 文件名
-    private string CurrectFile { get; set; }
+    private string _CurrectFile { get; set; }
     #region Unused
     public void Postprocess(Driver driver, ASTContext ctx)
     {
@@ -29,7 +30,7 @@ internal class GeneratingUnit : ILibrary
     public void Setup(Driver driver)
     {
         // C++版本
-        driver.ParserOptions.LanguageVersion = LanguageVersion.CPP17;
+        driver.ParserOptions.LanguageVersion = LanguageVersion.CPP20;
         // 详细输出
         driver.Options.Verbose = true;
         driver.ParserOptions.Verbose = true;
@@ -53,11 +54,13 @@ internal class GeneratingUnit : ILibrary
         driver.Options.OutputDir = outputPath;
 
         Module module = driver.Options.AddModule(Module);
-        module.Headers.Add(CurrectFile);
+        module.Headers.Add(_CurrectFile);
 
         // 引用目录
-        module.IncludeDirs.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include"));
-        module.IncludeDirs.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include", "llapi", "mc"));
+        foreach (string path in Utils.GetAllChildDir(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include", "llapi")))
+        {
+            module.IncludeDirs.Add(path);
+        }
 
         // 静态库
         module.LibraryDirs.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "lib"));
@@ -74,8 +77,15 @@ internal class GeneratingUnit : ILibrary
             Console.WriteLine($"Doing {file.Name} to {Module}...");
             if (file.Extension is ".h" or ".hpp")
             {
-                CurrectFile = file.FullName;
-                ConsoleDriver.Run(this);
+                _CurrectFile = file.FullName;
+                try
+                {
+                    ConsoleDriver.Run(this);
+                }
+                catch (NullReferenceException ex)
+                {
+                    Console.WriteLine(ex);
+                }
             }
         }
     }
