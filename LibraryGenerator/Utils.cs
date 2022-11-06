@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 
 namespace LibraryGenerator
@@ -23,30 +22,6 @@ namespace LibraryGenerator
                 list.AddRange(temp);
             }
             return list;
-        }
-
-        static object _lock = new();
-
-        internal static void ColorWriteLine(ConsoleColor foreground, ConsoleColor background, string format, params object[] args)
-        {
-            lock (_lock)
-            {
-                var currentForeground = Console.ForegroundColor;
-                var currentBackground = Console.BackgroundColor;
-
-                Console.ForegroundColor = foreground;
-                Console.BackgroundColor = background;
-
-                Console.WriteLine(string.Format(format, args));
-
-                Console.ForegroundColor = currentForeground;
-                Console.BackgroundColor = currentBackground;
-            }
-        }
-
-        internal static void ColorWriteLine(ConsoleColor foreground, string format, params object[] args)
-        {
-            ColorWriteLine(foreground, ConsoleColor.Black, format, args);
         }
     }
 }
