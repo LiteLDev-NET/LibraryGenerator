@@ -1,19 +1,15 @@
-﻿using System.IO;
+﻿using CppSharp;
+using System;
 
-new GeneratingUnit()
+try
 {
-    InputPath = Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include", "llapi", "mc"),
-    Module = "Minecraft"
-}.Run();
-
-new GeneratingUnit()
+    ConsoleDriver.Run(new GeneratingUnit()
+    {
+        Module = args[0],
+        CurrectFile = args[1]
+    });
+}
+catch (NullReferenceException ex)
 {
-    InputPath = Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include", "llapi"),
-    Module = "LiteLoader"
-}.Run();
-
-new GeneratingUnit()
-{
-    InputPath = Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include", "llapi", "perm"),
-    Module = "Permission"
-}.Run();
+    Console.WriteLine(ex);
+}

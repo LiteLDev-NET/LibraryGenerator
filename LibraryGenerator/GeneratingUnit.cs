@@ -11,10 +11,8 @@ internal class GeneratingUnit : ILibrary
 {
     // 模块名
     internal string Module { get; set; }
-    // 文件目录
-    internal string InputPath { get; set; }
     // 文件名
-    private string CurrectFile { get; set; }
+    internal string CurrectFile { get; set; }
     //不需要解析的文件
     internal static readonly List<string> SkipFiles = new()
     {
@@ -57,7 +55,7 @@ internal class GeneratingUnit : ILibrary
         // 转换类型
         driver.Options.GeneratorKind = GeneratorKind.CLI;
         // 输出目录
-        string outputPath = Path.Combine(Directory.GetCurrentDirectory(), "output", Module);
+        string outputPath = Path.Combine(Environment.CurrentDirectory, "output", Module);
         if (!Directory.Exists(outputPath))
         {
             _ = Directory.CreateDirectory(outputPath);
@@ -68,37 +66,17 @@ internal class GeneratingUnit : ILibrary
         module.Headers.Add(CurrectFile);
 
         // 引用目录
-        module.IncludeDirs.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include"));
-        foreach (string path in Utils.GetAllChildDir(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include", "llapi")))
+        module.IncludeDirs.Add(Path.Combine(Environment.CurrentDirectory, "SDK", "include"));
+        foreach (string path in Utils.GetAllChildDir(Path.Combine(Environment.CurrentDirectory, "SDK", "include", "llapi")))
         {
             module.IncludeDirs.Add(path);
         }
 
         // 静态库
-        module.LibraryDirs.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "lib"));
+        module.LibraryDirs.Add(Path.Combine(Environment.CurrentDirectory, "SDK", "lib"));
         module.Libraries.Add("bedrock_server_api");
         module.Libraries.Add("bedrock_server_var");
         module.Libraries.Add("LiteLoader");
         module.Libraries.Add("SymDBHelper");
-    }
-
-    internal void Run()
-    {
-        foreach (FileInfo file in new DirectoryInfo(InputPath).GetFiles())
-        {
-            Utils.ColorWriteLine(ConsoleColor.Yellow, $"Doing {file.Name} to {Module}...");
-            if (file.Extension is ".h" or ".hpp")
-            {
-                CurrectFile = file.FullName;
-                try
-                {
-                    ConsoleDriver.Run(this);
-                }
-                catch (NullReferenceException ex)
-                {
-                    Console.WriteLine(ex);
-                }
-            }
-        }
     }
 }
