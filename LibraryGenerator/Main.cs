@@ -25,31 +25,15 @@ public class Program
                 }
             }
         }
-        #region Fix
-        {
-            string Global_h = Path.Combine(sdkPath, "include", "llapi", "Global.h");
-            string[] lines = File.ReadAllLines(Global_h);
-            for (int i = 0; i < lines.Length; i++)
-            {
-                if (lines[i].StartsWith("#include \"third-party"))
-                {
-                    lines[i] = "//" + lines[i];
-                }
-            }
-            File.WriteAllLines(Global_h, lines);
-        }
-        #endregion
-        PreGenerateHeaderHelper helper = new(Path.Combine(sdkPath, "include", "llapi", "mc", "Actor.hpp"));
-
-        helper.Run();
 
         List<string> IncludeDirs = new()
         {
-            Path.GetFullPath(Path.Combine(sdkPath, "include"))
+            Path.GetFullPath(Path.Combine(sdkPath, "include")),
+            Path.GetFullPath(Path.Combine(sdkPath, "include", "llapi","mc"))
         };
         #region FixDir
         {
-            string[] tryToAdd = new string[]
+            string[] tryToAdd =
             {
                 Path.Combine("C:", "Program Files", "Microsoft Visual Studio", "2022", "Community", "VC", "Tools", "MSVC", "14.33.31629", "include")
             };

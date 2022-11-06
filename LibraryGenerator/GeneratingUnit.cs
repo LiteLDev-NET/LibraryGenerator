@@ -46,6 +46,15 @@ public class GeneratingUnit : ILibrary
 
     public void Setup(Driver driver)
     {
+        driver.ParserOptions.AddDefines("NDEBUG");
+        driver.ParserOptions.AddDefines("LITELOADER_EXPORTS");
+        driver.ParserOptions.AddDefines("WIN32_LEAN_AND_MEAN");
+        driver.ParserOptions.AddDefines("_CRT_SECURE_NO_WARNINGS");
+        driver.ParserOptions.AddDefines("_WINDOWS");
+        driver.ParserOptions.AddDefines("_USRDLL");
+        driver.ParserOptions.AddDefines("_AMD64_");
+        driver.ParserOptions.AddDefines("NOMINMAX");
+
         ParserOptions parserOptions = driver.ParserOptions;
         DriverOptions options = driver.Options;
         Module module = options.AddModule(ModuleName);
