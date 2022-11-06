@@ -32,7 +32,8 @@ jobs:
         LibraryBuilder.exe -o ..\Lib Server
 
     - name: Run
-      run: Runner\bin\Release\net6.0\Runner.exe
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: Runner\bin\Release\net6.0\Runner.exe "D:\a\LLNETLibraryGenerator\LLNETLibraryGenerator\LibraryGenerator\bin\Release\net6.0\LibraryGenerator.exe"
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3.1.0
