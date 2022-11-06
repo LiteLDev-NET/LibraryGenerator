@@ -13,7 +13,7 @@ internal class GeneratingUnit : ILibrary
     // 文件目录
     internal string InputPath { get; set; }
     // 文件名
-    private string _CurrectFile { get; set; }
+    private string CurrectFile { get; set; }
     #region Unused
     public void Postprocess(Driver driver, ASTContext ctx)
     {
@@ -54,9 +54,10 @@ internal class GeneratingUnit : ILibrary
         driver.Options.OutputDir = outputPath;
 
         Module module = driver.Options.AddModule(Module);
-        module.Headers.Add(_CurrectFile);
+        module.Headers.Add(CurrectFile);
 
         // 引用目录
+        module.IncludeDirs.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include"));
         foreach (string path in Utils.GetAllChildDir(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include", "llapi")))
         {
             module.IncludeDirs.Add(path);
@@ -77,7 +78,7 @@ internal class GeneratingUnit : ILibrary
             Console.WriteLine($"Doing {file.Name} to {Module}...");
             if (file.Extension is ".h" or ".hpp")
             {
-                _CurrectFile = file.FullName;
+                CurrectFile = file.FullName;
                 try
                 {
                     ConsoleDriver.Run(this);
