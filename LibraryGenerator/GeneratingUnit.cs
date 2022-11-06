@@ -57,6 +57,7 @@ internal class GeneratingUnit : ILibrary
 
         // 引用目录
         module.IncludeDirs.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include"));
+        module.IncludeDirs.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include", "llapi", "mc"));
 
         // 静态库
         module.LibraryDirs.Add(Path.Combine(Directory.GetCurrentDirectory(), "SDK", "lib"));
