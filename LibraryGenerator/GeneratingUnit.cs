@@ -42,7 +42,6 @@ internal class GeneratingUnit : ILibrary
         driver.ParserOptions.AddDefines("_USRDLL");
         driver.ParserOptions.AddDefines("_AMD64_");
         driver.ParserOptions.AddDefines("NOMINMAX");
-        driver.ParserOptions.AddDefines("%(PreprocessorDefinitions)");
         // 转换类型
         driver.Options.GeneratorKind = GeneratorKind.CLI;
         // 输出目录

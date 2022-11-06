@@ -2,14 +2,14 @@
 
 new GeneratingUnit()
 {
-    InputPath = Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include", "llapi"),
-    Module = "LiteLoader"
+    InputPath = Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include", "llapi", "mc"),
+    Module = "Minecraft"
 }.Run();
 
 new GeneratingUnit()
 {
-    InputPath = Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include", "llapi", "mc"),
-    Module = "Minecraft"
+    InputPath = Path.Combine(Directory.GetCurrentDirectory(), "SDK", "include", "llapi"),
+    Module = "LiteLoader"
 }.Run();
 
 new GeneratingUnit()
