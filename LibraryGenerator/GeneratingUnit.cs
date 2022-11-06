@@ -4,6 +4,7 @@ using CppSharp.Generators;
 using CppSharp.Parser;
 using LibraryGenerator;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 internal class GeneratingUnit : ILibrary
@@ -14,6 +15,16 @@ internal class GeneratingUnit : ILibrary
     internal string InputPath { get; set; }
     // 文件名
     private string CurrectFile { get; set; }
+    //不需要解析的文件
+    internal static readonly List<string> SkipFiles = new()
+    {
+        "Types.hpp",
+        "AABB.hpp",
+        "Vec3.hpp",
+        "Vec2.hpp",
+        "BoundingBox.hpp",
+        "BlockInstance.hpp",
+    };
     #region Unused
     public void Postprocess(Driver driver, ASTContext ctx)
     {
@@ -75,7 +86,7 @@ internal class GeneratingUnit : ILibrary
     {
         foreach (FileInfo file in new DirectoryInfo(InputPath).GetFiles())
         {
-            Console.WriteLine($"Doing {file.Name} to {Module}...");
+            Utils.ColorWriteLine(ConsoleColor.Yellow, $"Doing {file.Name} to {Module}...");
             if (file.Extension is ".h" or ".hpp")
             {
                 CurrectFile = file.FullName;
