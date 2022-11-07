@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace LibraryGenerator;
 
@@ -12,31 +8,33 @@ internal class PreGenerateProcess
 {
     public string CurrentFile { get; set; }
 
-    private bool IsInside_AFTER_EXTRA;
+    private bool _IsInside_AFTER_EXTRA;
 
     public PreGenerateProcess(string filePath)
     {
         CurrentFile = filePath;
-        IsInside_AFTER_EXTRA = false;
+        _IsInside_AFTER_EXTRA = false;
     }
 
     public void Run()
     {
-        var fileInfo = new FileInfo(CurrentFile);
-        var handledFilePath = Path.Combine(CacheDir, fileInfo.Name);
+        FileInfo fileInfo = new(CurrentFile);
+        string handledFilePath = Path.Combine(CacheDir, fileInfo.Name);
 
-        var outputFile = File.Create(handledFilePath);
-        var inputFile = File.Open(CurrentFile, FileMode.Open);
-        var reader = new StreamReader(inputFile);
-        var writer = new StreamWriter(outputFile);
+        FileStream outputFile = File.Create(handledFilePath);
+        FileStream inputFile = File.Open(CurrentFile, FileMode.Open);
+        StreamReader reader = new(inputFile);
+        StreamWriter writer = new(outputFile);
 
         while (!reader.EndOfStream)
         {
-            var line = reader.ReadLine();
+            string line = reader.ReadLine();
             HandleInputLine(ref line);
 
-            if (line != null && !IsInside_AFTER_EXTRA)
+            if (line is not null && !_IsInside_AFTER_EXTRA)
+            {
                 writer.WriteLine(line);
+            }
         }
 
         reader.Close();
@@ -55,17 +53,13 @@ internal class PreGenerateProcess
 
     static PreGenerateProcess()
     {
-        try
+        string cacheDir = Path.Combine(Environment.CurrentDirectory, "cache");
+        if (!Directory.Exists(cacheDir))
         {
-            var cacheDir = Path.Combine(Environment.CurrentDirectory, "cache");
-            if (!Directory.Exists(cacheDir))
-                Directory.CreateDirectory(cacheDir);
-            CacheDir = cacheDir;
+            _ = Directory.CreateDirectory(cacheDir);
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
+
+        CacheDir = cacheDir;
     }
 
     protected enum LineType
@@ -76,43 +70,45 @@ internal class PreGenerateProcess
 
     protected void HandleInputLine(ref string line)
     {
-        if (line == "#define AFTER_EXTRA")
+        if (line is "#define AFTER_EXTRA")
         {
-            IsInside_AFTER_EXTRA = true;
+            _IsInside_AFTER_EXTRA = true;
             return;
         }
 
-        if (line == "#undef AFTER_EXTRA")
+        if (line is "#undef AFTER_EXTRA")
         {
-            IsInside_AFTER_EXTRA = false;
+            _IsInside_AFTER_EXTRA = false;
             return;
         }
 
-        if (IsInside_AFTER_EXTRA)
+        if (_IsInside_AFTER_EXTRA)
+        {
             return;
+        }
 
         if (line.Contains("gsl::"))
         {
             if (line.Contains("gsl::not_null"))
             {
-                var rx = RegexHelper.gsl_not_null_regex.Match(line);
+                Match rx = RegexHelper.gsl_not_null_regex.Match(line);
                 if (rx.Success)
                 {
-                    var classType = rx.Groups["class_type"].Value;
+                    string classType = rx.Groups["class_type"].Value;
                     line = line.Replace($"class gsl::not_null<{classType}>", classType);
                 }
             }
             else if (line.Contains("gsl::basic_string_span"))
             {
-                var rx = RegexHelper.gsl_basic_string_span_regex.Match(line);
+                Match rx = RegexHelper.gsl_basic_string_span_regex.Match(line);
                 if (rx.Success)
                 {
-                    var charType = rx.Groups["char_type"].Value;
-                    var stringType = charType switch
+                    string charType = rx.Groups["char_type"].Value;
+                    string stringType = charType switch
                     {
                         "char" => "std::string",
                         "wchar_t" => "std::wstring",
-                        _ => throw new Exception()
+                        _ => charType
                     };
                     line = line.Replace($"class gsl::basic_string_span<{charType}, {rx.Groups["value"].Value}>", stringType);
                 }

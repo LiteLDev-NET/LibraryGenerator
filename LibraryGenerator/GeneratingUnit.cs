@@ -4,7 +4,6 @@ using CppSharp.Generators;
 using CppSharp.Parser;
 using LibraryGenerator;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 internal class GeneratingUnit : ILibrary
@@ -13,16 +12,6 @@ internal class GeneratingUnit : ILibrary
     internal string Module { get; set; }
     // 文件名
     internal string CurrectFile { get; set; }
-    //不需要解析的文件
-    internal static readonly List<string> SkipFiles = new()
-    {
-        "Types.hpp",
-        "AABB.hpp",
-        "Vec3.hpp",
-        "Vec2.hpp",
-        "BoundingBox.hpp",
-        "BlockInstance.hpp",
-    };
     #region Unused
     public void Postprocess(Driver driver, ASTContext ctx)
     {
