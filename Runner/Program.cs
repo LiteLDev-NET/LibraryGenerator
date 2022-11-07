@@ -1,27 +1,37 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 
-foreach (FileInfo file in new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "SDK", "include", "llapi", "mc")).GetFiles())
+Dictionary<string, FileInfo[]> files = new()
 {
-    if (file.Extension is ".h" or ".hpp" || !File.Exists(Path.Combine(Environment.CurrentDirectory, "output", "Minecraft", Path.ChangeExtension(file.Name, ".h"))))
+    { "Minecraft", new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "SDK", "include", "llapi", "mc")).GetFiles("*.h*") },
+    { "LiteLoader", new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "SDK", "include", "llapi")).GetFiles("*.h*") },
+    { "Permission", new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "SDK", "include", "llapi", "perm")).GetFiles("*.h*") }
+};
+foreach (KeyValuePair<string, FileInfo[]> file in files)
+{
+    List<Task> tasks = new();
+    int index = 0;
+    for (int i = 0; i < Environment.ProcessorCount; i++)
     {
-        Process.Start(args[0], $"Minecraft {file.FullName}").WaitForExit();
+        Task task = new(() =>
+        {
+            while (file.Value.Length > index)
+            {
+                int localIndex = index++;
+                if (!File.Exists(Path.Combine(Environment.CurrentDirectory, "output", file.Key, Path.ChangeExtension(file.Value[localIndex].Name, ".h"))))
+                {
+                    Process.Start(args[0], $"{file.Key} {file.Value[localIndex].FullName}").WaitForExit();
+                }
+            }
+        });
+        task.Start();
+        tasks.Add(task);
     }
-}
-
-foreach (FileInfo file in new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "SDK", "include", "llapi")).GetFiles())
-{
-    if (file.Extension is ".h" or ".hpp" || !File.Exists(Path.Combine(Environment.CurrentDirectory, "output", "LiteLoader", Path.ChangeExtension(file.Name, ".h"))))
+    foreach (Task task in tasks)
     {
-        Process.Start(args[0], $"LiteLoader {file.FullName}").WaitForExit();
-    }
-}
-
-foreach (FileInfo file in new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "SDK", "include", "llapi", "perm")).GetFiles())
-{
-    if (file.Extension is ".h" or ".hpp" || !File.Exists(Path.Combine(Environment.CurrentDirectory, "output", "Permission", Path.ChangeExtension(file.Name, ".h"))))
-    {
-        Process.Start(args[0], $"Permission {file.FullName}").WaitForExit();
+        task.Wait();
     }
 }
