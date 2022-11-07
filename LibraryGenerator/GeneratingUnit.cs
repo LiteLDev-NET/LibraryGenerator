@@ -1,4 +1,4 @@
-﻿using CppSharp;
+using CppSharp;
 using CppSharp.AST;
 using CppSharp.Generators;
 using CppSharp.Parser;
@@ -40,9 +40,8 @@ internal class GeneratingUnit : ILibrary
     {
         // C++版本
         driver.ParserOptions.LanguageVersion = LanguageVersion.CPP20;
-        // 详细输出
-        driver.Options.Verbose = true;
-        driver.ParserOptions.Verbose = true;
+        // 转换类型
+        driver.Options.GeneratorKind = GeneratorKind.CLI;
         // 预处理定义
         driver.ParserOptions.AddDefines("NDEBUG");
         driver.ParserOptions.AddDefines("LITELOADER_EXPORTS");
@@ -52,15 +51,6 @@ internal class GeneratingUnit : ILibrary
         driver.ParserOptions.AddDefines("_USRDLL");
         driver.ParserOptions.AddDefines("_AMD64_");
         driver.ParserOptions.AddDefines("NOMINMAX");
-        // 转换类型
-        driver.Options.GeneratorKind = GeneratorKind.CLI;
-        // 输出目录
-        string outputPath = Path.Combine(Environment.CurrentDirectory, "output", Module);
-        if (!Directory.Exists(outputPath))
-        {
-            _ = Directory.CreateDirectory(outputPath);
-        }
-        driver.Options.OutputDir = outputPath;
 
         Module module = driver.Options.AddModule(Module);
         module.Headers.Add(CurrectFile);
@@ -78,5 +68,13 @@ internal class GeneratingUnit : ILibrary
         module.Libraries.Add("bedrock_server_var");
         module.Libraries.Add("LiteLoader");
         module.Libraries.Add("SymDBHelper");
+
+        // 输出目录
+        string outputPath = Path.Combine(Environment.CurrentDirectory, "output", Module);
+        if (!Directory.Exists(outputPath))
+        {
+            _ = Directory.CreateDirectory(outputPath);
+        }
+        driver.Options.OutputDir = outputPath;
     }
 }

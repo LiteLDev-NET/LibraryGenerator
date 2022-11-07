@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
+
+namespace LibraryGenerator;
 
 internal static class RegexHelper
 {

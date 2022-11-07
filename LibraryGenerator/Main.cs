@@ -1,4 +1,4 @@
-﻿using CppSharp;
+using CppSharp;
 using System;
 
 try
