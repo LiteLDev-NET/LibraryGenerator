@@ -1,8 +1,9 @@
-﻿using System;
+﻿using LibraryGenerator;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace LibraryGenerator;
+namespace PreProcesser;
 
 internal class PreGenerateProcess
 {
@@ -29,10 +30,25 @@ internal class PreGenerateProcess
         while (!reader.EndOfStream)
         {
             string line = reader.ReadLine();
+            if (line is "#undef AFTER_EXTRA")
+            {
+                _IsInside_AFTER_EXTRA = false;
+            }
+
             HandleInputLine(ref line);
 
-            if (line is not null && !_IsInside_AFTER_EXTRA)
+            if (line is "#define AFTER_EXTRA")
             {
+                _IsInside_AFTER_EXTRA = true;
+            }
+
+            if (line is not null)
+            {
+                if (_IsInside_AFTER_EXTRA)
+                {
+                    writer.Write("// ");
+                }
+
                 writer.WriteLine(line);
             }
         }
@@ -70,17 +86,6 @@ internal class PreGenerateProcess
 
     protected void HandleInputLine(ref string line)
     {
-        if (line is "#define AFTER_EXTRA")
-        {
-            _IsInside_AFTER_EXTRA = true;
-            return;
-        }
-
-        if (line is "#undef AFTER_EXTRA")
-        {
-            _IsInside_AFTER_EXTRA = false;
-            return;
-        }
 
         if (_IsInside_AFTER_EXTRA)
         {
