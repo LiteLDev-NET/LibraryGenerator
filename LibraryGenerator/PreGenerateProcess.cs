@@ -25,21 +25,24 @@ internal class PreGenerateProcess
         var fileInfo = new FileInfo(CurrentFile);
         var handledFilePath = Path.Combine(CacheDir, fileInfo.Name);
 
+        var outputFile = File.Create(handledFilePath);
+        var inputFile = File.Open(CurrentFile, FileMode.Open);
+        var reader = new StreamReader(inputFile);
+        var writer = new StreamWriter(outputFile);
+
+        while (!reader.EndOfStream)
         {
-            using var outputFile = File.Create(handledFilePath);
-            using var inputFile = File.Open(CurrentFile, FileMode.Open);
-            using var reader = new StreamReader(inputFile);
-            using var writer = new StreamWriter(outputFile);
+            var line = reader.ReadLine();
+            HandleInputLine(ref line);
 
-            while (!reader.EndOfStream)
-            {
-                var line = reader.ReadLine();
-                HandleInputLine(ref line);
-
-                if (line != null && !IsInside_AFTER_EXTRA)
-                    writer.WriteLine(line);
-            }
+            if (line != null && !IsInside_AFTER_EXTRA)
+                writer.WriteLine(line);
         }
+
+        reader.Close();
+        writer.Close();
+        inputFile.Close();
+        outputFile.Close();
 
         File.Copy(handledFilePath, CurrentFile, true);
         File.Delete(handledFilePath);
@@ -52,11 +55,17 @@ internal class PreGenerateProcess
 
     static PreGenerateProcess()
     {
-        var cacheDir = Path.Combine(Environment.CurrentDirectory, "cache");
-        if (Directory.Exists(cacheDir))
-            Directory.Delete(cacheDir, true);
-        Directory.CreateDirectory(cacheDir);
-        CacheDir = cacheDir;
+        try
+        {
+            var cacheDir = Path.Combine(Environment.CurrentDirectory, "cache");
+            if (!Directory.Exists(cacheDir))
+                Directory.CreateDirectory(cacheDir);
+            CacheDir = cacheDir;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     protected enum LineType
