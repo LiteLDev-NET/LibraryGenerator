@@ -16,9 +16,9 @@ internal static class RegexHelper
 
     public static readonly Regex std_function_regex = new(@"class std::function<(?<function_type>.*)>");
 
-    public static readonly Regex gsl_not_null = new(@"class gsl::not_null<(?<class_type>.*)>");
+    public static readonly Regex gsl_not_null_regex = new(@"class gsl::not_null<(?<class_type>.*)>");
 
-    public static readonly Regex gsl_basic_string_span =
+    public static readonly Regex gsl_basic_string_span_regex =
         new(@"class gsl::basic_string_span<(?<char_type>.*), (?<value>.*)>");
 
 }
