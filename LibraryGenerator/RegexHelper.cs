@@ -1,5 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 
+namespace LibraryGenerator;
+
 internal static class RegexHelper
 {
     public static readonly Regex std_basic_string_regex =
