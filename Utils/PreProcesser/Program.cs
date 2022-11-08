@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-string input = Console.ReadLine();
+string input = Environment.CurrentDirectory;
 if (!Directory.Exists(input))
 {
     throw new FileNotFoundException(input);

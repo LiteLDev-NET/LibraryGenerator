@@ -36,21 +36,21 @@ internal class PreGenerateProcess
             }
 
             HandleInputLine(ref line);
-
-            if (line is "#define AFTER_EXTRA")
-            {
-                _IsInside_AFTER_EXTRA = true;
-            }
-
             if (line is not null)
             {
-                if (_IsInside_AFTER_EXTRA)
+                if (_IsInside_AFTER_EXTRA && !line.StartsWith("//") && !string.IsNullOrWhiteSpace(line))
                 {
                     writer.Write("// ");
                 }
 
                 writer.WriteLine(line);
             }
+
+            if (line is "#define AFTER_EXTRA")
+            {
+                _IsInside_AFTER_EXTRA = true;
+            }
+
         }
 
         reader.Close();
