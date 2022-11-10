@@ -12,7 +12,10 @@ foreach (DirectoryInfo subDir in directory.GetDirectories())
 {
     foreach (FileInfo file in subDir.GetFiles())
     {
-        PreGenerateProcess handledFile = new(file.FullName);
-        handledFile.Run();
+        if(AFTER_EXTRA_Helper.RuningProcessFiles.ContainsKey(file.Name))
+        {
+            PreGenerateProcess handledFile = new(file.FullName);
+            handledFile.Run();
+        }
     }
 }

@@ -23,4 +23,6 @@ internal static class RegexHelper
     public static readonly Regex gsl_basic_string_span_regex =
         new(@"class gsl::basic_string_span<(?<char_type>.*?), (?<value>.*?)>");
 
+    public static readonly Regex gsl_span_regex = new(@"gsl::span<(?<class_type>.*), (?<value>.*?)>");
+
 }
