@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 Dictionary<string, FileInfo[]> files = new()
 {
     {
-        "Minecraft",
+        "MC",
         new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "SDK", "include", "llapi", "mc")).GetFiles("*.h*")
     },
     {
