@@ -1,8 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿namespace LibraryGenerator.Utils;
 
-namespace LibraryGenerator.Utils;
-
-internal partial class FileHelper
+internal class FileHelper
 {
     private readonly string _className;
     private readonly string _nameSpace;
@@ -13,7 +11,17 @@ internal partial class FileHelper
         _nameSpace = nameSpace;
         _builder = new();
     }
-    internal void WriteToFile()
+    public static FileHelper operator +(FileHelper helper, Func symbol)
+    {
+        // Doing...
+        return helper;
+    }
+    public override string ToString()
+    {
+        return string.Join('\n', GetLines());
+    }
+
+    internal List<string> GetLines()
     {
         List<string> cache = new(_builder);
         cache.Insert(0, "{");
@@ -21,14 +29,6 @@ internal partial class FileHelper
         cache.Insert(0, string.Empty);
         cache.Insert(0, $"namespace {_nameSpace};");
         cache.Add("}");
-        string dirPath = Path.Combine("Out", _nameSpace);
-        if (!Directory.Exists(dirPath))
-        {
-            _ = Directory.CreateDirectory(dirPath);
-        }
-        File.WriteAllLines(Path.Combine(dirPath, $"{FileNameRegex().Match(_className).Value}.cs"), cache);
+        return cache;
     }
-
-    [GeneratedRegex("[\\w]+")]
-    private static partial Regex FileNameRegex();
 }
