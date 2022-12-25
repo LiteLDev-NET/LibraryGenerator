@@ -29,6 +29,6 @@ internal partial class FileHelper
         File.WriteAllLines(Path.Combine(dirPath, $"{FileNameRegex().Match(_className).Value}.cs"), cache);
     }
 
-    [GeneratedRegex("[a-zA-Z_]+?")]
+    [GeneratedRegex("[\\w]+")]
     private static partial Regex FileNameRegex();
 }
