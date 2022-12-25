@@ -1,43 +1,80 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace LibraryGenerator.Utils
+namespace LibraryGenerator.Utils;
+
+internal struct OriginalData
 {
-    internal struct OriginalData
+    [JsonPropertyName("classes")]
+    public Dictionary<string, Class> Classes { get; set; }
+    public struct Class
     {
-        public Dictionary<string, Dictionary<string, List<Item>>> classes { get; set; }
+        [JsonPropertyName("parent_types")]
+        public List<string> ParentTypes { get; set; }
+        [JsonPropertyName("public")]
+        public List<Item> Public { get; set; }
+        [JsonPropertyName("virtual")]
+        public List<Item> Virtual { get; set; }
+        [JsonPropertyName("vtbl_entry")]
+        public List<string> VtblEntry { get; set; }
+        [JsonPropertyName("child_types")]
+        public List<string> ChildTypes { get; set; }
+        [JsonPropertyName("protected")]
+        public List<Item> Protected { get; set; }
+        [JsonPropertyName("public.static")]
+        public List<Item> PublicStatic { get; set; }
+        [JsonPropertyName("private.static")]
+        public List<Item> PrivateStatic { get; set; }
         public struct Item
         {
-            public int access_type { get; set; }
-            public string fake_symbol { get; set; }
-            public int flag_bits { get; set; }
-            public string name { get; set; }
-            public string @namespace { get; set; }
-            public List<Type> @params { get; set; }
-            public struct Type
+            [JsonPropertyName("access_type")]
+            public int AccessType { get; set; }
+            [JsonPropertyName("fake_symbol")]
+            public string FakeSymbol { get; set; }
+            [JsonPropertyName("flag_bits")]
+            public int FlagBits { get; set; }
+            [JsonPropertyName("name")]
+            public string Name { get; set; }
+            [JsonPropertyName("namespace")]
+            public string Namespace { get; set; }
+            [JsonPropertyName("params")]
+            public List<TypeData> Params { get; set; }
+            public struct TypeData
             {
-                public int kind { get; set; }
-                public string name { get; set; }
+                [JsonPropertyName("kind")]
+                public int Kind { get; set; }
+                [JsonPropertyName("name")]
+                public string Name { get; set; }
             }
-            public int rva { get; set; }
-            public int storage_class { get; set; }
-            public string symbol { get; set; }
-            public int symbol_type { get; set; }
-            public Type type { get; set; }
+            [JsonPropertyName("rva")]
+            public ulong RVA { get; set; }
+            [JsonPropertyName("storage_class")]
+            public int StorageClass { get; set; }
+            [JsonPropertyName("symbol")]
+            public string Symbol { get; set; }
+            [JsonPropertyName("symbol_type")]
+            public int SymbolType { get; set; }
+            [JsonPropertyName("type")]
+            public TypeData Type { get; set; }
         }
-        public Dictionary<string, int> fn_list { get; set; }
-        public Identifier identifier { get; set; }
-        public struct Identifier
-        {
-            public List<string> @class { get; set; }
-            public List<string> @struct { get; set; }
-        }
-        public Hashs sha_256_hash { get; set; }
-        public struct Hashs
-        {
-            [JsonPropertyName("bedrock_server.exe")]
-            public string exe { get; set; }
-            [JsonPropertyName("bedrock_server.pdb")]
-            public string pdb { get; set; }
-        }
+    }
+    [JsonPropertyName("fn_list")]
+    public Dictionary<string, int> FunctionList { get; set; }
+    [JsonPropertyName("identifier")]
+    public IdentifierData Identifier { get; set; }
+    public struct IdentifierData
+    {
+        [JsonPropertyName("class")]
+        public List<string> Class { get; set; }
+        [JsonPropertyName("struct")]
+        public List<string> Struct { get; set; }
+    }
+    [JsonPropertyName("sha_256_hash")]
+    public Hashs Sha256Hash { get; set; }
+    public struct Hashs
+    {
+        [JsonPropertyName("bedrock_server.exe")]
+        public string Exe { get; set; }
+        [JsonPropertyName("bedrock_server.pdb")]
+        public string Pdb { get; set; }
     }
 }
